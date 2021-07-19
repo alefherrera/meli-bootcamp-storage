@@ -57,6 +57,7 @@ func Test_sqlRepository_Store_Mock(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, getResult)
 	assert.Equal(t, user.UUID, getResult.UUID)
+	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
 func Test_sqlRepository_Update(t *testing.T) {
