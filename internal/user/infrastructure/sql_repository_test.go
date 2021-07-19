@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"context"
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"meli-bootcamp-storage/internal/models"
@@ -21,6 +22,35 @@ func Test_sqlRepository_Store(t *testing.T) {
 	err = repository.Store(ctx, &user)
 	assert.NoError(t, err)
 	getResult, err := repository.GetOne(ctx, uuid.New())
+	assert.NoError(t, err)
+	assert.Nil(t, getResult)
+	getResult, err = repository.GetOne(ctx, userId)
+	assert.NoError(t, err)
+	assert.NotNil(t, getResult)
+	assert.Equal(t, user.UUID, getResult.UUID)
+}
+
+func Test_sqlRepository_Store_Mock(t *testing.T) {
+	db, mock, err := util.InitDbMock()
+	assert.NoError(t, err)
+	defer db.Close()
+	mock.ExpectExec("INSERT INTO users").WillReturnResult(sqlmock.NewResult(1, 1))
+	columns := []string{"uuid", "firstname", "lastname", "username", "password", "email", "ip", "macAddress", "website", "image"}
+	rows := sqlmock.NewRows(columns)
+	userId := uuid.New()
+	userId2 := uuid.New()
+	rows.AddRow(userId, "", "", "", "", "", "", "", "", "")
+	rows2 := sqlmock.NewRows(columns)
+	mock.ExpectQuery("SELECT .* FROM users").WithArgs(userId2).WillReturnRows(rows2)
+	mock.ExpectQuery("SELECT .* FROM users").WithArgs(userId).WillReturnRows(rows)
+	repository := NewSqlRepository(db)
+	ctx := context.TODO()
+	user := models.User{
+		UUID: userId,
+	}
+	err = repository.Store(ctx, &user)
+	assert.NoError(t, err)
+	getResult, err := repository.GetOne(ctx, userId2)
 	assert.NoError(t, err)
 	assert.Nil(t, getResult)
 	getResult, err = repository.GetOne(ctx, userId)

@@ -2,6 +2,7 @@ package util
 
 import (
 	"database/sql"
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/DATA-DOG/go-txdb"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -18,4 +19,8 @@ func InitDb() (*sql.DB, error) {
 	}
 
 	return db, err
+}
+
+func InitDbMock() (*sql.DB, sqlmock.Sqlmock, error) {
+	return sqlmock.New()
 }

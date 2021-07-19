@@ -28,8 +28,23 @@ func NewSqlRepository(db *sql.DB) *sqlRepository {
 }
 
 func (receiver *sqlRepository) Store(ctx context.Context, model *models.User) error {
-	_, err := receiver.db.ExecContext(ctx, insertQuery, model.UUID, model.Firstname, model.Lastname, model.Username, model.Password, model.Email, model.IP, model.MacAddress, model.Website, model.Image)
-	return err
+	result, err := receiver.db.ExecContext(ctx, insertQuery, model.UUID, model.Firstname, model.Lastname, model.Username, model.Password, model.Email, model.IP, model.MacAddress, model.Website, model.Image)
+
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected != 1 {
+		return fmt.Errorf("%d users created", rowsAffected)
+	}
+
+	return nil
 }
 
 func (receiver *sqlRepository) GetOne(ctx context.Context, id uuid.UUID) (*models.User, error) {
