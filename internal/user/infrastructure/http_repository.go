@@ -33,7 +33,7 @@ func (receiver *httpRepository) Store(ctx context.Context, model *models.User) e
 	panic("implement me")
 }
 
-func (receiver *httpRepository) GetOne(ctx context.Context) (*models.User, error) {
+func (receiver *httpRepository) GetOne(ctx context.Context, id uuid.UUID) (*models.User, error) {
 	panic("implement me")
 }
 
