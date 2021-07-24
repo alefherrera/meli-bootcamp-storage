@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	insertQuery    = "INSERT INTO users (uuid, firstname, lastname, username, password, email, ip, macAddress, website, image) values (?,?,?,?,?,?,?,?,?,?);"
-	selectOneQuery = "SELECT * FROM users WHERE uuid = ?"
-	updateQuery    = "UPDATE users SET firstname = ?, lastname = ?, username = ?, password = ?, email = ?, ip = ?, macAddress = ?, website = ?, image = ? WHERE uuid = ?"
+	insertQuery    = "INSERT INTO users (id, firstname, lastname, username, password, email, ip, macAddress, website, image) values (?,?,?,?,?,?,?,?,?,?);"
+	selectOneQuery = "SELECT * FROM users WHERE id = ?"
+	updateQuery    = "UPDATE users SET firstname = ?, lastname = ?, username = ?, password = ?, email = ?, ip = ?, macAddress = ?, website = ?, image = ? WHERE id = ?"
 	selectQuery    = "SELECT * FROM users"
-	deleteQuery    = "DELETE from users where uuid = ?"
+	deleteQuery    = "DELETE from users where id = ?"
 )
 
 var _ user.Repository = (*sqlRepository)(nil)
