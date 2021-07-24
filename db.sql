@@ -2,7 +2,7 @@ CREATE DATABASE mydb;
 USE mydb;
 CREATE TABLE users
 (
-    uuid       VARCHAR(36)   NOT NULL PRIMARY KEY,
+    id         VARCHAR(36)   NOT NULL PRIMARY KEY,
     firstname  VARCHAR(100)  NOT NULL,
     lastname   VARCHAR(100)  NOT NULL,
     username   VARCHAR(100)  NOT NULL,

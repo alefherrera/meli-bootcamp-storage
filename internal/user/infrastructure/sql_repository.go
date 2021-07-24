@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/google/uuid"
 	"meli-bootcamp-storage/internal/models"
 	"meli-bootcamp-storage/internal/user"
 )
@@ -28,7 +27,7 @@ func NewSqlRepository(db *sql.DB) *sqlRepository {
 }
 
 func (receiver *sqlRepository) Store(ctx context.Context, model *models.User) error {
-	result, err := receiver.db.ExecContext(ctx, insertQuery, model.UUID, model.Firstname, model.Lastname, model.Username, model.Password, model.Email, model.IP, model.MacAddress, model.Website, model.Image)
+	result, err := receiver.db.ExecContext(ctx, insertQuery, model.Id, model.Firstname, model.Lastname, model.Username, model.Password, model.Email, model.IP, model.MacAddress, model.Website, model.Image)
 
 	if err != nil {
 		return err
@@ -47,7 +46,7 @@ func (receiver *sqlRepository) Store(ctx context.Context, model *models.User) er
 	return nil
 }
 
-func (receiver *sqlRepository) GetOne(ctx context.Context, id uuid.UUID) (*models.User, error) {
+func (receiver *sqlRepository) GetOne(ctx context.Context, id string) (*models.User, error) {
 	result := new(models.User)
 	row := receiver.db.QueryRowContext(ctx, selectOneQuery, id)
 
@@ -58,7 +57,7 @@ func (receiver *sqlRepository) GetOne(ctx context.Context, id uuid.UUID) (*model
 	}
 
 	err = row.Scan(
-		&result.UUID,
+		&result.Id,
 		&result.Firstname,
 		&result.Lastname,
 		&result.Username,
@@ -93,7 +92,7 @@ func (receiver *sqlRepository) Update(ctx context.Context, model *models.User) e
 		model.MacAddress,
 		model.Website,
 		model.Image,
-		model.UUID,
+		model.Id,
 	)
 
 	if err != nil {
@@ -123,7 +122,7 @@ func (receiver *sqlRepository) GetAll(ctx context.Context) ([]models.User, error
 	for rows.Next() {
 		user := models.User{}
 		err = rows.Scan(
-			&user.UUID,
+			&user.Id,
 			&user.Firstname,
 			&user.Lastname,
 			&user.Username,
@@ -145,7 +144,7 @@ func (receiver *sqlRepository) GetAll(ctx context.Context) ([]models.User, error
 	return result, nil
 }
 
-func (receiver *sqlRepository) Delete(ctx context.Context, id uuid.UUID) error {
+func (receiver *sqlRepository) Delete(ctx context.Context, id string) error {
 	result, err := receiver.db.ExecContext(ctx, deleteQuery, id)
 	if err != nil {
 		return err
