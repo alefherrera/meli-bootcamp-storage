@@ -12,16 +12,24 @@ import (
 	"meli-bootcamp-storage/internal/models"
 	"meli-bootcamp-storage/internal/user"
 	"meli-bootcamp-storage/internal/user/infrastructure"
+	"strings"
 )
 
 func main() {
+	ctx := context.TODO()
+	tableName := "Users"
 	dynamo, err := initDynamo()
 	if err != nil {
 		panic(err)
 	}
-	repository := infrastructure.NewDynamoRepository(dynamo, "Users")
 
-	ctx := context.TODO()
+	err = createTable(ctx, dynamo, tableName)
+
+	if err != nil {
+		panic(err)
+	}
+
+	repository := infrastructure.NewDynamoRepository(dynamo, tableName)
 
 	err = storeUsers(ctx, repository)
 	if err != nil {
@@ -32,6 +40,36 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func createTable(ctx context.Context, dynamo *dynamodb.DynamoDB, name string) error {
+	_, err := dynamo.CreateTableWithContext(ctx, &dynamodb.CreateTableInput{
+		TableName: aws.String(name),
+		AttributeDefinitions: []*dynamodb.AttributeDefinition{
+			{
+				AttributeName: aws.String("id"),
+				AttributeType: aws.String("S"),
+			},
+		},
+		KeySchema: []*dynamodb.KeySchemaElement{
+			{
+				AttributeName: aws.String("id"),
+				KeyType:       aws.String("HASH"),
+			},
+		},
+		ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
+			ReadCapacityUnits:  aws.Int64(10),
+			WriteCapacityUnits: aws.Int64(10),
+		},
+	})
+	if err != nil {
+		message := err.Error()
+		if strings.Contains(message, "Cannot create preexisting table") {
+			return nil
+		}
+		return err
+	}
+	return nil
 }
 
 func printUsers(ctx context.Context, repository user.Repository) error {
