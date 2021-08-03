@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/google/uuid"
 )
 
 func init() {
@@ -16,7 +17,7 @@ func init() {
 }
 
 func InitDb() (*sql.DB, error) {
-	db, err := sql.Open("txdb", "identifier")
+	db, err := sql.Open("txdb", uuid.New().String())
 
 	if err == nil {
 		return db, db.Ping()
